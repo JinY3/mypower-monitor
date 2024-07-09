@@ -21,7 +21,7 @@ bin/run -account 2023*********** -pwd ********* -token **************
 
 ## token
 
-使用 [pushplus](https://www.pushplus.plus/) 推送消息，需要传入token
+使用 [pushplus](https://www.pushplus.plus/) 推送消息，需要传入token, 若不需要可以置空
 
 ## 后续
 
