@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/JinY3/gopkg/filex"
 	"github.com/JinY3/gopkg/logx"
 	"github.com/chromedp/chromedp"
 )
@@ -47,6 +48,7 @@ func Check(username, password string) {
 
 // 向指定文件追加写入内容
 func appendFile(filename string, content string) {
+	filex.CreateFile(filename)
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
 		logx.MyAll.Errorf("打开文件失败: %s", err)
