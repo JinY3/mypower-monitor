@@ -26,3 +26,6 @@ go.sum
 # data file
 **/time.txt
 **/value.txt
+
+# log
+**/*.log
