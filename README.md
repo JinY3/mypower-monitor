@@ -22,3 +22,7 @@ bin/run -account 2023*********** -pwd ********* -token **************
 ## token
 
 使用 [pushplus](https://www.pushplus.plus/) 推送消息，需要传入token
+
+## 后续
+
+改用 github action 运行, 实现无服务器使用
