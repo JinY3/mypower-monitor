@@ -27,13 +27,13 @@ func Init(r *gin.Engine) {
 	})
 
 	r.GET("/", func(c *gin.Context) {
-		c.File("index.html")
+		c.File("static/index.html")
 	})
 	r.GET("/echarts.js", func(c *gin.Context) {
-		c.File("echarts.js")
+		c.File("static/echarts.js")
 	})
 	r.GET("/my.js", func(c *gin.Context) {
-		c.File("my.js")
+		c.File("static/my.js")
 	})
 	r.GET("/data", func(c *gin.Context) {
 		// 读取value.txt文件并生成数组
