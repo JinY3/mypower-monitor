@@ -72,7 +72,6 @@ func Init(r *gin.Engine) {
 			return
 		}
 		// 计算天数差
-		timeDiff := make([]string, len(timeTxt)-1)
 		for i := 1; i < len(timeTxt)-1; i++ {
 			// 解析时间
 			logx.MyAll.Debugf("%s", timeTxt[i])
@@ -95,7 +94,10 @@ func Init(r *gin.Engine) {
 
 			dayDiff := t2.Sub(t1).Hours() / 24
 			valueDiff[i-1] = valueDiff[i-1] / dayDiff
-			timeDiff[i-1] = fmt.Sprintf("%s (近 %d 天平均)", timeTxt[i-1], int(dayDiff))
+			if dayDiff < 2 {
+				continue
+			}
+			timeTxt[i] = fmt.Sprintf("%s (近 %d 天平均)", timeTxt[i], int(dayDiff))
 		}
 		// 保留两位小数
 		for i := 0; i < len(valueDiff); i++ {
@@ -103,7 +105,7 @@ func Init(r *gin.Engine) {
 		}
 		c.JSON(http.StatusOK, gin.H{
 			"current": valueDiff[len(valueDiff)-1],
-			"time":    timeDiff[:len(timeDiff)-1],
+			"time":    timeTxt[1 : len(timeTxt)-1],
 			"value":   valueDiff[:len(valueDiff)-1],
 		})
 	})

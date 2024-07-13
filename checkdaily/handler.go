@@ -16,34 +16,39 @@ import (
 var Token string
 
 func Check(username, password string) {
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
-	ctx, cancel = context.WithTimeout(ctx, 20*time.Second)
-	defer cancel()
+	tryCounter := 0
 
-	url := "http://ehall.njc.ucas.ac.cn/qljfwapp/sys/lwPsXykApp/index.do?#/dledcx"
+	for i := 0; i < tryCounter; i++ {
+		ctx, cancel := chromedp.NewContext(context.Background())
+		defer cancel()
+		ctx, cancel = context.WithTimeout(ctx, 20*time.Second)
+		defer cancel()
 
-	var dataValue string
+		url := "http://ehall.njc.ucas.ac.cn/qljfwapp/sys/lwPsXykApp/index.do?#/dledcx"
 
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(url),
-		chromedp.WaitVisible("#username"),
-		chromedp.WaitVisible("#password"),
-		chromedp.SendKeys("#username", username),
-		chromedp.SendKeys("#password", password),
-		chromedp.Click("#login_submit", chromedp.NodeVisible),
-		chromedp.AttributeValue(`//*[@name="REMAINEQ"]`, "data-value", &dataValue, nil),
-	)
-	if err != nil {
-		logx.MyAll.Errorf("查询电量失败: %s", err)
-		sendEmail("查询电量失败")
-	} else {
-		logx.MyAll.Infof("查询电量成功: %s", dataValue)
-		sendEmail(fmt.Sprintf("当前电量: %s", dataValue))
-		appendFile("./value.txt", fmt.Sprintf("%s\n", dataValue))
-		appendFile("./time.txt", fmt.Sprintf("%s\n", time.Now().Format("2006-01-02")))
+		var dataValue string
+
+		err := chromedp.Run(ctx,
+			chromedp.Navigate(url),
+			chromedp.WaitVisible("#username"),
+			chromedp.WaitVisible("#password"),
+			chromedp.SendKeys("#username", username),
+			chromedp.SendKeys("#password", password),
+			chromedp.Click("#login_submit", chromedp.NodeVisible),
+			chromedp.AttributeValue(`//*[@name="REMAINEQ"]`, "data-value", &dataValue, nil),
+		)
+		if err != nil {
+			logx.MyAll.Errorf("查询电量失败: %s", err)
+		} else {
+			logx.MyAll.Infof("查询电量成功: %s", dataValue)
+			sendEmail(fmt.Sprintf("当前电量: %s", dataValue))
+			appendFile("./value.txt", fmt.Sprintf("%s\n", dataValue))
+			appendFile("./time.txt", fmt.Sprintf("%s\n", time.Now().Format("2006-01-02")))
+			return
+		}
 	}
 
+	sendEmail("查询电量失败")
 }
 
 // 向指定文件追加写入内容
