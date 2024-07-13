@@ -9,11 +9,11 @@ fetch('http://157.0.19.2:10063/mypower/data')
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: '宿舍剩余电量'
+                text: '宿舍剩余电量: ' + data.current + '度'
             },
             tooltip: {},
             legend: {
-                data: ['剩余电量']
+                data: ['耗电量']
             },
             xAxis: {
                 data: data.time
@@ -21,7 +21,7 @@ fetch('http://157.0.19.2:10063/mypower/data')
             yAxis: {},
             series: [
                 {
-                    name: '剩余电量',
+                    name: '耗电量',
                     type: 'bar',
                     data: data.value,
                     label: {

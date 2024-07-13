@@ -31,7 +31,7 @@ func main() {
 	defer cancel()
 
 	go func(_account, _pwd string) {
-		checkdaily.Check(_account, _pwd)
+		// checkdaily.Check(_account, _pwd)
 		for {
 			select {
 			case <-ctlCtx.Done():
