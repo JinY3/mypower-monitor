@@ -16,9 +16,12 @@ fetch('http://157.0.19.2:10063/mypower/data')
                 data: ['耗电量']
             },
             xAxis: {
+                type: 'category',
                 data: data.time
             },
-            yAxis: {},
+            yAxis: {
+                type: 'value'
+            },
             series: [
                 {
                     name: '耗电量',
