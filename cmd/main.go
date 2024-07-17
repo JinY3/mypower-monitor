@@ -10,7 +10,6 @@ import (
 	"github.com/JinY3/gopkg/logx"
 	"github.com/JinY3/mypower-monitor/checkdaily"
 	"github.com/JinY3/mypower-monitor/server"
-	"github.com/chromedp/chromedp"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,7 +26,7 @@ func init() {
 
 func main() {
 	flag.Parse()
-	ctlCtx, cancel := chromedp.NewContext(context.Background())
+	ctlCtx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	go func(_account, _pwd string) {

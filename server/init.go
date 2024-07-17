@@ -74,8 +74,8 @@ func Init(r *gin.Engine) {
 		// 计算天数差
 		for i := 1; i < len(timeTxt)-1; i++ {
 			// 解析时间
-			logx.MyAll.Debugf("%s", timeTxt[i])
-			t1, err := time.Parse("2006-01-02", timeTxt[i-1])
+			// logx.MyAll.Debugf("%s", timeTxt[i-1])
+			t1, err := time.Parse("2006-01-02", timeTxt[i-1][:10])
 			if err != nil {
 				logx.MyAll.Errorf("解析时间失败: %s", err)
 				c.JSON(http.StatusGatewayTimeout, gin.H{

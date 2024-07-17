@@ -16,7 +16,7 @@ import (
 var Token string
 
 func Check(username, password string) {
-	tryCounter := 0
+	tryCounter := 3
 
 	for i := 0; i < tryCounter; i++ {
 		ctx, cancel := chromedp.NewContext(context.Background())
