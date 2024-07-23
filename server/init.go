@@ -28,19 +28,33 @@ func Init(r *gin.Engine) {
 			c.Next()
 		}
 	})
-
-	r.GET("/", func(c *gin.Context) {
-		c.File("static/index.html")
+	r.LoadHTMLFiles("index.html")
+	r.GET("/:homeid", func(c *gin.Context) {
+		homeid := c.Param("homeid")
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"homeid": homeid,
+		})
 	})
-	r.GET("/echarts.js", func(c *gin.Context) {
+	r.GET("/static/echarts.js", func(c *gin.Context) {
 		c.File("static/echarts.js")
 	})
-	r.GET("/my.js", func(c *gin.Context) {
-		c.File("static/my.js")
+	r.GET("/static/my.js/:homeid", func(c *gin.Context) {
+		homeid := c.Param("homeid")
+		// 从my.js文件中读取内容并替换其中的ID
+		myjsContent, err := os.ReadFile("static/my.js")
+		if err != nil {
+			logx.MyAll.Errorf("读取my.js文件失败: %s", err)
+			c.JSON(http.StatusGatewayTimeout, gin.H{
+				"message": "读取文件失败",
+			})
+			return
+		}
+		c.Data(http.StatusOK, "text/javascript", []byte(strings.ReplaceAll(string(myjsContent), "{{.homeid}}", homeid)))
 	})
-	r.GET("/data", func(c *gin.Context) {
+	r.GET("/data/:homeid", func(c *gin.Context) {
+		homeid := c.Param("homeid")
 		// 读取value.txt文件并生成数组
-		value, err := readFile("value.txt")
+		value, err := readFile(fmt.Sprintf("data/%s/value.txt", homeid))
 		if err != nil {
 			logx.MyAll.Errorf("读取value.txt文件失败: %s", err)
 			c.JSON(http.StatusGatewayTimeout, gin.H{
@@ -63,7 +77,7 @@ func Init(r *gin.Engine) {
 		}
 
 		// 读取timeTxt.txt文件并生成数组
-		timeTxt, err := readFile("time.txt")
+		timeTxt, err := readFile(fmt.Sprintf("data/%s/time.txt", homeid))
 		if err != nil {
 			logx.MyAll.Errorf("读取time.txt文件失败: %s", err)
 			c.JSON(http.StatusGatewayTimeout, gin.H{

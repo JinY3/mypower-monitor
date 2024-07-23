@@ -13,9 +13,7 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-var Token string
-
-func Check(username, password string) {
+func (user *User) Check() {
 	tryCounter := 3
 
 	for i := 0; i < tryCounter; i++ {
@@ -32,23 +30,23 @@ func Check(username, password string) {
 			chromedp.Navigate(url),
 			chromedp.WaitVisible("#username"),
 			chromedp.WaitVisible("#password"),
-			chromedp.SendKeys("#username", username),
-			chromedp.SendKeys("#password", password),
+			chromedp.SendKeys("#username", user.Account),
+			chromedp.SendKeys("#password", user.Password),
 			chromedp.Click("#login_submit", chromedp.NodeVisible),
 			chromedp.AttributeValue(`//*[@name="REMAINEQ"]`, "data-value", &dataValue, nil),
 		)
 		if err != nil {
-			logx.MyAll.Errorf("查询电量失败: %s", err)
+			logx.MyAll.WithField("user", user.Homeid).Errorf("查询电量失败: %s", err)
 		} else {
-			logx.MyAll.Infof("查询电量成功: %s", dataValue)
-			sendEmail(fmt.Sprintf("当前电量: %s", dataValue))
-			appendFile("./value.txt", fmt.Sprintf("%s\n", dataValue))
-			appendFile("./time.txt", fmt.Sprintf("%s\n", time.Now().Format("2006-01-02")))
+			logx.MyAll.WithField("user", user.Homeid).Infof("查询电量成功: %s", dataValue)
+			user.sendEmail(fmt.Sprintf("当前电量: %s", dataValue))
+			appendFile(fmt.Sprintf("data/%s/value.txt", user.Homeid), fmt.Sprintf("%s\n", dataValue))
+			appendFile(fmt.Sprintf("data/%s/time.txt", user.Homeid), fmt.Sprintf("%s\n", time.Now().Format("2006-01-02")))
 			return
 		}
 	}
 
-	sendEmail("查询电量失败")
+	user.sendEmail("查询电量失败")
 }
 
 // 向指定文件追加写入内容
@@ -67,15 +65,15 @@ func appendFile(filename string, content string) {
 	}
 }
 
-func sendEmail(msg string) {
-	if Token == "" {
-		logx.MyAll.Errorf("未设置pushplus token")
+func (user *User) sendEmail(msg string) {
+	if user.Token == "" {
+		logx.MyAll.WithField("user", user.Homeid).Debugf("未设置pushplus token")
 		return
 	}
-	data := []byte(fmt.Sprintf("{\"token\": \"%s\", \"title\": \"%s\", \"content\": \"%s\"}", Token, "查询电量监控", msg))
+	data := []byte(fmt.Sprintf("{\"token\": \"%s\", \"title\": \"%s\", \"content\": \"%s\"}", user.Token, "查询电量监控", msg))
 	response, err := http.Post("http://www.pushplus.plus/send", "application/json", bytes.NewBuffer(data))
 	if err != nil {
-		logx.MyAll.Errorf("发送邮件失败: %s", err)
+		logx.MyAll.WithField("user", user.Homeid).Errorf("发送邮件失败: %s", err)
 		return
 	}
 	defer response.Body.Close()

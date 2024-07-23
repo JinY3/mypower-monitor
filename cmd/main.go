@@ -2,62 +2,51 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"net/http"
 	"time"
 
+	"github.com/JinY3/gopkg/filex"
 	"github.com/JinY3/gopkg/logx"
 	"github.com/JinY3/mypower-monitor/checkdaily"
 	"github.com/JinY3/mypower-monitor/server"
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	account string
-	pwd     string
-)
+var checkdailyList struct {
+	Users []checkdaily.User `json:"users"`
+}
 
 func init() {
-	flag.StringVar(&account, "account", "", "学号")
-	flag.StringVar(&pwd, "pwd", "", "密码")
-	flag.StringVar(&checkdaily.Token, "token", "", "pushplus token")
+	filex.ReadConfig("config", "userlist", &checkdailyList)
+	logx.MyAll.Debugf("读取用户列表成功: %v", checkdailyList)
 }
 
 func main() {
-	flag.Parse()
 	ctlCtx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go func(_account, _pwd string) {
-		// checkdaily.Check(_account, _pwd)
+	go func(Users []checkdaily.User) {
+		// for _, user := range Users {
+		// 	go user.Check()
+		// }
 		for {
 			select {
 			case <-ctlCtx.Done():
 				return
 			case <-time.After(24 * time.Hour):
-				checkdaily.Check(_account, _pwd)
+				for _, user := range Users {
+					go user.Check()
+				}
 			}
 		}
-	}(account, pwd)
+	}(checkdailyList.Users)
 
 	port := 7001 // master的端口
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	server.Init(r)
 
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: r,
-	}
-
-	// 启动端口监听, 失败则停止阻塞
-	logx.MyAll.Infof("server listen on %d", port)
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logx.MyAll.Fatalf("listen: %s", err)
-	}
-
-	// 关闭master
-	logx.MyAll.Info("server shutdown")
+	logx.MyAll.Infof("server start at :%d", port)
+	r.Run(fmt.Sprintf(":%d", port))
 }

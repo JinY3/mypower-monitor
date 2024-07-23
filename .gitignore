@@ -29,3 +29,6 @@ go.sum
 
 # log
 **/*.log
+
+# config
+**/*.yaml

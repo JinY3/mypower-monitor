@@ -2,14 +2,14 @@
 var myChart = echarts.init(document.getElementById('main'));
 
 // 发送GET请求
-fetch('http://157.0.19.2:10063/mypower/data')
+fetch('http://157.0.19.2:10063/mypower/data/{{.homeid}}')
     .then(response => response.json())
     .then(data => {
         console.log(data)
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: '宿舍剩余电量: ' + data.current + '度'
+                text: '{{.homeid}}宿舍剩余电量: ' + data.current + '度'
             },
             tooltip: {},
             legend: {
