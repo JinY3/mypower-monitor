@@ -12,11 +12,21 @@ cd {project_path}
 # 也可以使用release，二进制文件放到{project_path}/bin下
 go build -o bin/run cmd/main.go
 
-# help
-bin/run -h
+# config/userlist.yaml 存放用户信息
+`example
+Users:
+  - Account: 2023xxxxxxx
+    Password: "mypassword1"
+    Token: xxxxxxxxxxxxxxxx
+    Homeid: b905
+  - Account: 2022xxxxxxx
+    Password: "mypassword2"
+    Token: xxxxxxxxxxxxxxxx
+    Homeid: a801
+`
 
-# example
-bin/run -account 2023*********** -pwd ********* -token **************
+# use
+bin/run
 ```
 
 ## token
