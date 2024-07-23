@@ -9,7 +9,7 @@ cd {project_path}
 # ls
 # bin  checkdaily  cmd  default.log  go.mod  go.sum  LICENSE  README.md  server  static  time.txt  value.txt
 
-# 也可以使用release，二进制文件放到{project_path}/bin下
+# 执行文件放到{project_path}/bin下
 go build -o bin/run cmd/main.go
 
 # config/userlist.yaml 存放用户信息
