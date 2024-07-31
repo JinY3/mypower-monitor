@@ -25,7 +25,6 @@ func (user *User) Check() {
 		url := "http://ehall.njc.ucas.ac.cn/qljfwapp/sys/lwPsXykApp/index.do?#/dledcx"
 
 		var dataValue string
-
 		err := chromedp.Run(ctx,
 			chromedp.Navigate(url),
 			chromedp.WaitVisible("#username"),
@@ -45,6 +44,8 @@ func (user *User) Check() {
 			return
 		}
 	}
+
+	time.Sleep(5 * time.Minute)
 
 	user.sendEmail("查询电量失败")
 }
