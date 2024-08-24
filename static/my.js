@@ -13,7 +13,7 @@ fetch('http://157.0.19.2:10063/mypower/data/{{.homeid}}')
             },
             tooltip: {},
             legend: {
-                data: ['耗电量']
+                data: ['近30天耗电量']
             },
             xAxis: {
                 type: 'category',
@@ -24,7 +24,7 @@ fetch('http://157.0.19.2:10063/mypower/data/{{.homeid}}')
             },
             series: [
                 {
-                    name: '耗电量',
+                    name: '近30天耗电量',
                     type: 'bar',
                     data: data.value,
                     label: {

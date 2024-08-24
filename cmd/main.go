@@ -30,9 +30,9 @@ func main() {
 		Token string            `json:"token"`
 		Users []checkdaily.User `json:"users"`
 	}) {
-		for _, user := range yaml.Users {
-			go user.Check(yaml.Token)
-		}
+		// for _, user := range yaml.Users {
+		// 	go user.Check(yaml.Token)
+		// }
 		for {
 			select {
 			case <-ctlCtx.Done():

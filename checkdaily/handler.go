@@ -51,19 +51,20 @@ func (user *User) Check(token string) {
 }
 
 // 向指定文件追加写入内容
-func appendFile(filename string, content string) {
+func appendFile(filename string, content string) error {
 	filex.CreateFile(filename)
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
 		logx.MyAll.Errorf("打开文件失败: %s", err)
-		return
+		return err
 	}
 	defer f.Close()
 	_, err = f.WriteString(content)
 	if err != nil {
 		logx.MyAll.Errorf("写入文件失败: %s", err)
-		return
+		return err
 	}
+	return nil
 }
 
 func (user *User) send(token, title, msg string) {
