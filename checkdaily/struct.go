@@ -3,6 +3,6 @@ package checkdaily
 type User struct {
 	Account  string `json:"account"`
 	Password string `json:"password"`
-	Token    string `json:"token"`
+	To       string `json:"to"`
 	Homeid   string `json:"homeid"`
 }

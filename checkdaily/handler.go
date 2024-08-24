@@ -13,7 +13,7 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-func (user *User) Check() {
+func (user *User) Check(token string) {
 	tryCounter := 3
 
 	for i := 0; i < tryCounter; i++ {
@@ -38,7 +38,7 @@ func (user *User) Check() {
 			logx.MyAll.WithField("user", user.Homeid).Errorf("查询电量失败: %s", err)
 		} else {
 			logx.MyAll.WithField("user", user.Homeid).Infof("查询电量成功: %s", dataValue)
-			user.sendEmail(fmt.Sprintf("当前电量: %s", dataValue))
+			user.send(token, fmt.Sprintf("当前电量: %s", dataValue), fmt.Sprintf("http://157.0.19.2:10063/mypower/%s", user.Homeid))
 			appendFile(fmt.Sprintf("data/%s/value.txt", user.Homeid), fmt.Sprintf("%s\n", dataValue))
 			appendFile(fmt.Sprintf("data/%s/time.txt", user.Homeid), fmt.Sprintf("%s\n", time.Now().Format("2006-01-02")))
 			return
@@ -47,7 +47,7 @@ func (user *User) Check() {
 
 	time.Sleep(5 * time.Minute)
 
-	user.sendEmail("查询电量失败")
+	user.send(token, "查询电量失败", fmt.Sprintf("http://157.0.19.2:10063/mypower/%s", user.Homeid))
 }
 
 // 向指定文件追加写入内容
@@ -66,12 +66,17 @@ func appendFile(filename string, content string) {
 	}
 }
 
-func (user *User) sendEmail(msg string) {
-	if user.Token == "" {
-		logx.MyAll.WithField("user", user.Homeid).Debugf("未设置pushplus token")
+func (user *User) send(token, title, msg string) {
+	if token == "" {
+		logx.MyAll.Debugf("未设置pushplus token")
 		return
 	}
-	data := []byte(fmt.Sprintf("{\"token\": \"%s\", \"title\": \"%s\", \"content\": \"%s\"}", user.Token, "查询电量监控", msg))
+	var data []byte
+	if user.To == "" {
+		data = []byte(fmt.Sprintf("{\"token\": \"%s\", \"title\": \"%s\", \"content\": \"%s\"}", token, title, msg))
+	} else {
+		data = []byte(fmt.Sprintf("{\"token\": \"%s\", \"title\": \"%s\", \"content\": \"%s\", \"to\": \"%s\"}", token, title, msg, user.To))
+	}
 	response, err := http.Post("http://www.pushplus.plus/send", "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		logx.MyAll.WithField("user", user.Homeid).Errorf("发送邮件失败: %s", err)

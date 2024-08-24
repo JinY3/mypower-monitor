@@ -12,34 +12,38 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var checkdailyList struct {
+var checkdailyYaml struct {
+	Token string            `json:"token"`
 	Users []checkdaily.User `json:"users"`
 }
 
 func init() {
-	filex.ReadConfig("config", "userlist", &checkdailyList)
-	logx.MyAll.Debugf("读取用户列表成功: %v", checkdailyList)
+	filex.ReadConfig("config", "userlist", &checkdailyYaml)
+	logx.MyAll.Debugf("读取用户列表成功: %v", checkdailyYaml)
 }
 
 func main() {
 	ctlCtx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go func(Users []checkdaily.User) {
-		// for _, user := range Users {
-		// 	go user.Check()
-		// }
+	go func(yaml struct {
+		Token string            `json:"token"`
+		Users []checkdaily.User `json:"users"`
+	}) {
+		for _, user := range yaml.Users {
+			go user.Check(yaml.Token)
+		}
 		for {
 			select {
 			case <-ctlCtx.Done():
 				return
 			case <-time.After(24 * time.Hour):
-				for _, user := range Users {
-					go user.Check()
+				for _, user := range yaml.Users {
+					go user.Check(yaml.Token)
 				}
 			}
 		}
-	}(checkdailyList.Users)
+	}(checkdailyYaml)
 
 	port := 7001 // master的端口
 	// gin.SetMode(gin.ReleaseMode)
