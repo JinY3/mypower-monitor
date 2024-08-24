@@ -14,14 +14,14 @@ go build -o bin/run cmd/main.go
 
 # config/userlist.yaml 存放用户信息
 `example
+Token: xxxxxxxxxxxxxxx  # pushplus token
 Users:
   - Account: 2023xxxxxxx
     Password: "mypassword1"
-    Token: xxxxxxxxxxxxxxxx
     Homeid: b905
   - Account: 2022xxxxxxx
     Password: "mypassword2"
-    Token: xxxxxxxxxxxxxxxx
+    To: xxxxxxxxxxxxxxxx  # pushplus friend id
     Homeid: a801
 `
 
